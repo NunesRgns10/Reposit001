@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sist Contr Freq 1Ano v45</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen p-6">
+    <div class="max-w-6xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
+        <div class="p-6">
+            <h1 class="text-2xl font-bold text-center text-indigo-700 mb-6">Sist Contr de Frequência 1º Ano v.45</h1>
+            
+            <!-- Seleção de Turmas -->
+            <div class="mb-6">
+                <div class="border-b border-gray-200">
+                    <nav class="flex -mb-px">
+                        <button id="tab-turma-A" class="tab-button text-center w-1/4 py-4 px-1 border-b-2 font-medium text-sm border-indigo-500 text-indigo-600 bg-indigo-50">
+                            Turma 1A
+                        </button>
+                        <button id="tab-turma-B" class="tab-button text-center w-1/4 py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                            Turma 1B
+                        </button>
+                        <button id="tab-turma-C" class="tab-button text-center w-1/4 py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                            Turma 1C
+                        </button>
+                        <button id="tab-turma-D" class="tab-button text-center w-1/4 py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                            Turma 1D
+                        </button>
+                    </nav>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Lista de Alunos -->
+                <div class="md:col-span-2 bg-white p-5 rounded-lg border border-gray-200">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-semibold text-gray-700">Lista de Alunos 1- <span id="currentClassDisplay">Turma A</span></h2>
+                        <div class="flex items-center space-x-2">
+                            <label for="attendanceDate" class="text-sm text-gray-600">Data:</label>
+                            <input type="date" id="attendanceDate" 
+                                class="px-2 py-1 border border-gray-300 rounded-md text-sm"
+                                value="">
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-y-auto max-h-[500px]">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50 sticky top-0">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nº</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
+                                    <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Presença</th>
+                                    <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Obs</th>
+                                    <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Total Faltas</th>
+                                    <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Histórico</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentsList" class="bg-white divide-y divide-gray-200">
+                                <!-- Alunos serão inseridos aqui -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Painel de Informações -->
+                <div class="bg-white p-5 rounded-lg border border-gray-200">
+                    <h2 class="text-lg font-semibold text-gray-700 mb-4">Informações</h2>
+                    
+                    <div class="bg-indigo-50 p-4 rounded-lg mb-6">
+                        <p class="text-sm text-indigo-800">
+                            <strong>Instruções:</strong> Selecione uma turma, uma data e marque presença ou falta para cada aluno. 
+                            Os dados são salvos automaticamente no navegador.
+                        </p>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="text-md font-medium text-gray-700 mb-2">Resumo - <span id="summaryClassDisplay">Turma 1A</span></h3>
+                            <div class="bg-gray-50 p-3 rounded-lg">
+                                <p class="text-sm"><span id="totalStudents">0</span> alunos cadastrados</p>
+                                <p class="text-sm"><span id="totalAbsences">0</span> faltas registradas</p>
+                                <p class="text-sm"><span id="absentToday">0</span> faltas na data selecionada</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col space-y-2">
+                            <button id="viewJsonBtn" class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition">
+                                Ver JSON
+                            </button>
+                            <button id="exportBtn" class="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition">
+                                Exportar JSON
+                            </button>
+                            <button id="importBtn" class="bg-yellow-600 text-white py-2 px-4 rounded-md hover:bg-yellow-700 transition">
+                                Importar JSON
+                            </button>
+                            <button id="clearBtn" class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition">
+                                Limpar Dados
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Status do banco de dados -->
+                    <div class="mt-6">
+                        <h3 class="text-md font-medium text-gray-700 mb-2">Status</h3>
+                        <pre id="dbStatus" class="text-xs bg-gray-100 p-3 rounded overflow-x-auto max-h-32"></pre>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modal para visualização JSON -->
+            <div id="jsonModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
+                <div class="bg-white rounded-lg shadow-xl p-6 w-11/12 max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-medium text-gray-900">Visualização JSON</h3>
+                        <button id="closeJsonModal" class="text-gray-400 hover:text-gray-500">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="overflow-y-auto flex-grow">
+                        <pre id="jsonDisplay" class="bg-gray-100 p-4 rounded text-sm overflow-x-auto"></pre>
+                    </div>
+                    <div class="mt-4 flex justify-end">
+                        <button id="copyJsonBtn" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 mr-2">
+                            Copiar JSON
+                        </button>
+                        <button id="closeModalBtn" class="bg-gray-300 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-400">
+                            Fechar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modal para histórico de faltas -->
+            <div id="historyModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
+                <div class="bg-white rounded-lg shadow-xl p-6 w-11/12 max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 id="historyTitle" class="text-lg font-medium text-gray-900">Histórico de Faltas</h3>
+                        <button id="closeHistoryModal" class="text-gray-400 hover:text-gray-500">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="overflow-y-auto flex-grow">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
+                                    <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Obs</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyList" class="bg-white divide-y divide-gray-200">
+                                <!-- Histórico será inserido aqui -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-4 flex justify-end">
+                        <button id="closeHistoryBtn" class="bg-gray-300 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-400">
+                            Fechar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modal para importação de JSON -->
+            <div id="importModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
+                <div class="bg-white rounded-lg shadow-xl p-6 w-11/12 max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-medium text-gray-900">Importar JSON</h3>
+                        <button id="closeImportModal" class="text-gray-400 hover:text-gray-500">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="mb-4">
+                        <p class="text-sm text-gray-600 mb-2">Escolha um arquivo JSON para importar ou cole o conteúdo JSON abaixo:</p>
+                        <input type="file" id="jsonFileInput" accept=".json" class="mb-4 block w-full text-sm text-gray-500
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-md file:border-0
+                            file:text-sm file:font-semibold
+                            file:bg-indigo-50 file:text-indigo-700
+                            hover:file:bg-indigo-100">
+                        <textarea id="jsonTextInput" rows="10" class="w-full p-2 border border-gray-300 rounded-md text-sm" 
+                            placeholder='[{"studentId": 1, "date": "2023-05-10", "class": "A", "observation": "ABC"}]'></textarea>
+                    </div>
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-yellow-700">
+                                    A importação substituirá os dados existentes da turma atual. Certifique-se de que o formato do JSON está correto.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-end space-x-2">
+                        <button id="validateJsonBtn" class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">
+                            Validar JSON
+                        </button>
+                        <button id="confirmImportBtn" class="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">
+                            Importar
+                        </button>
+                        <button id="cancelImportBtn" class="bg-gray-300 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-400">
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let db;
+        const DB_NAME = 'attendanceDatabase';
+        const STORE_NAME = 'attendance';
+        let currentClass = 'A'; // Turma atual (A, B, C ou D)
+        
+        // Listas de alunos fictícios para cada turma
+        const classStudents = {
+            'A': [
+                { id: 1, name: "Ana Clara Silva" },
+                { id: 2, name: "Bruno Oliveira" },
+                { id: 3, name: "Carla Santos" },
+                { id: 4, name: "Diego Pereira" },
+                { id: 5, name: "Eduarda Costa" },
+                { id: 6, name: "Felipe Almeida" },
+                { id: 7, name: "Gabriela Souza" },
+                { id: 8, name: "Henrique Lima" },
+                { id: 9, name: "Isabela Ferreira" },
+                { id: 10, name: "João Pedro Martins" },
+                { id: 11, name: "Karina Rodrigues" },
+                { id: 12, name: "Lucas Gomes" },
+                { id: 13, name: "Mariana Ribeiro" },
+                { id: 14, name: "Natan Barbosa" },
+                { id: 15, name: "Olívia Carvalho" },
+                { id: 16, name: "Paulo Mendes" },
+                { id: 17, name: "Quézia Nascimento" },
+                { id: 18, name: "Rafael Moreira" },
+                { id: 19, name: "Sofia Cardoso" },
+                { id: 20, name: "Thiago Fernandes" }
+            ],
+            'B': [
+                { id: 1, name: "Amanda Oliveira" },
+                { id: 2, name: "Bernardo Santos" },
+                { id: 3, name: "Carolina Lima" },
+                { id: 4, name: "Daniel Costa" },
+                { id: 5, name: "Elisa Martins" },
+                { id: 6, name: "Fábio Pereira" },
+                { id: 7, name: "Giovanna Alves" },
+                { id: 8, name: "Hugo Ferreira" },
+                { id: 9, name: "Ingrid Sousa" },
+                { id: 10, name: "Júlio César" },
+                { id: 11, name: "Kamila Dias" },
+                { id: 12, name: "Leonardo Rocha" },
+                { id: 13, name: "Mônica Vieira" },
+                { id: 14, name: "Nícolas Ribeiro" },
+                { id: 15, name: "Otávio Gomes" },
+                { id: 16, name: "Patrícia Lopes" },
+                { id: 17, name: "Quirino Almeida" },
+                { id: 18, name: "Renata Cardoso" },
+                { id: 19, name: "Samuel Barbosa" },
+                { id: 20, name: "Tatiana Moreira" }
+            ],
+            'C': [
+                { id: 1, name: "Antônio Carlos" },
+                { id: 2, name: "Beatriz Mendes" },
+                { id: 3, name: "Caio Rodrigues" },
+                { id: 4, name: "Débora Alves" },
+                { id: 5, name: "Enzo Gabriel" },
+                { id: 6, name: "Fernanda Dias" },
+                { id: 7, name: "Gustavo Henrique" },
+                { id: 8, name: "Helena Souza" },
+                { id: 9, name: "Igor Carvalho" },
+                { id: 10, name: "Juliana Ferreira" },
+                { id: 11, name: "Kevin Santos" },
+                { id: 12, name: "Larissa Oliveira" },
+                { id: 13, name: "Matheus Lima" },
+                { id: 14, name: "Natália Costa" },
+                { id: 15, name: "Orlando Pereira" },
+                { id: 16, name: "Priscila Martins" },
+                { id: 17, name: "Quintino Silva" },
+                { id: 18, name: "Roberta Gomes" },
+                { id: 19, name: "Sérgio Ribeiro" },
+                { id: 20, name: "Talita Barbosa" }
+            ],
+            'D': [
+                { id: 1, name: "Adriano Moreira" },
+                { id: 2, name: "Bianca Cardoso" },
+                { id: 3, name: "Carlos Eduardo" },
+                { id: 4, name: "Daniela Almeida" },
+                { id: 5, name: "Evandro Lopes" },
+                { id: 6, name: "Flávia Rocha" },
+                { id: 7, name: "Gabriel Vieira" },
+                { id: 8, name: "Heloísa Dias" },
+                { id: 9, name: "Ivan Sousa" },
+                { id: 10, name: "Jéssica Ferreira" },
+                { id: 11, name: "Kleber Oliveira" },
+                { id: 12, name: "Luana Santos" },
+                { id: 13, name: "Marcelo Lima" },
+                { id: 14, name: "Nicole Costa" },
+                { id: 15, name: "Otávio Pereira" },
+                { id: 16, name: "Paula Martins" },
+                { id: 17, name: "Rodrigo Silva" },
+                { id: 18, name: "Sabrina Gomes" },
+                { id: 19, name: "Tiago Ribeiro" },
+                { id: 20, name: "Ursula Barbosa" }
+            ]
+        };
+        
+        // Inicializar o banco de dados IndexedDB
+        function initDatabase() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, 1);
+                
+                request.onerror = event => {
+                    updateStatus("Erro ao abrir o banco de dados: " + event.target.error);
+                    reject(event.target.error);
+                };
+                
+                request.onsuccess = event => {
+                    db = event.target.result;
+                    updateStatus("Banco de dados inicializado com sucesso!");
+                    resolve(db);
+                };
+                
+                request.onupgradeneeded = event => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        const store = db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+                        store.createIndex('studentId', 'studentId', { unique: false });
+                        store.createIndex('date', 'date', { unique: false });
+                        store.createIndex('class', 'class', { unique: false });
+                        store.createIndex('studentDate', ['studentId', 'date', 'class'], { unique: true });
+                        updateStatus("Estrutura do banco de dados criada!");
+                    }
+                };
+            });
+        }
+        
+        // Formatar data para exibição
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('pt-BR');
+        }
+        
+        // Formatar data para armazenamento (YYYY-MM-DD)
+        function formatDateForStorage(date) {
+            return date.toISOString().split('T')[0];
+        }
+        
+        // Definir data atual no campo de data
+        function setCurrentDate() {
+            const today = new Date();
+            const dateInput = document.getElementById("attendanceDate");
+            dateInput.value = formatDateForStorage(today);
+            return dateInput.value;
+        }
+        
+        // Alternar entre as turmas
+        function switchClass(classLetter) {
+            // Atualizar a turma atual
+            currentClass = classLetter;
+            
+            // Atualizar exibição da turma atual
+            document.getElementById("currentClassDisplay").textContent = `Turma ${classLetter}`;
+            document.getElementById("summaryClassDisplay").textContent = `Turma ${classLetter}`;
+            
+            // Atualizar estilo das abas
+            document.querySelectorAll('.tab-button').forEach(tab => {
+                tab.classList.remove('border-indigo-500', 'text-indigo-600', 'bg-indigo-50');
+                tab.classList.add('border-transparent', 'text-gray-500');
+            });
+            
+            const activeTab = document.getElementById(`tab-turma-${classLetter}`);
+            activeTab.classList.remove('border-transparent', 'text-gray-500');
+            activeTab.classList.add('border-indigo-500', 'text-indigo-600', 'bg-indigo-50');
+            
+            // Carregar lista de alunos da turma selecionada
+            loadStudents();
+            
+            updateStatus(`Turma ${classLetter} selecionada.`);
+        }
+        
+        // Carregar lista de alunos
+        async function loadStudents() {
+            const studentsList = document.getElementById("studentsList");
+            studentsList.innerHTML = "";
+            
+            const currentDate = document.getElementById("attendanceDate").value;
+            
+            // Obter registros de faltas para a data atual e turma atual
+            const absences = await getAbsencesForDate(currentDate, currentClass);
+            
+            // Obter total de faltas por aluno na turma atual
+            const absenceCount = await getAbsenceCountByStudent(currentClass);
+            
+            // Obter lista de alunos da turma atual
+            const students = classStudents[currentClass];
+            
+            students.forEach(student => {
+                const row = document.createElement("tr");
+                
+                // Verificar se o aluno está ausente na data selecionada
+                const absence = absences.find(absence => absence.studentId === student.id);
+                const isAbsent = !!absence;
+                
+                // Obter contagem de faltas para este aluno
+                const totalAbsences = absenceCount[student.id] || 0;
+                
+                // Obter observação (se existir)
+                const observation = absence ? (absence.observation || '') : '';
+                
+                row.innerHTML = `
+                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${student.id}</td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">${student.name}</td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm text-center">
+                        <div class="flex justify-center space-x-2">
+                            <button class="attendance-btn ${!isAbsent ? 'bg-green-500' : 'bg-gray-200'} text-white px-2 py-1 rounded-l-md hover:bg-green-600 transition" 
+                                data-student-id="${student.id}" data-present="true">
+                                Presente
+                            </button>
+                            <button class="attendance-btn ${isAbsent ? 'bg-red-500' : 'bg-gray-200'} text-white px-2 py-1 rounded-r-md hover:bg-red-600 transition" 
+                                data-student-id="${student.id}" data-present="false">
+                                Falta
+                            </button>
+                        </div>
+                    </td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm text-center">
+                        <input type="text" class="observation-input border border-gray-300 rounded px-2 py-1 w-12 text-center" 
+                            maxlength="3" data-student-id="${student.id}" value="${observation}" 
+                            placeholder="---">
+                    </td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm text-center text-gray-500">
+                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${totalAbsences > 0 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">
+                            ${totalAbsences}
+                        </span>
+                    </td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm text-center">
+                        <button class="history-btn bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600 transition" 
+                            data-student-id="${student.id}" data-student-name="${student.name}">
+                            Ver Histórico
+                        </button>
+                    </td>
+                `;
+                studentsList.appendChild(row);
+            });
+            
+            // Adicionar event listeners para os botões de presença
+            document.querySelectorAll('.attendance-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const studentId = parseInt(this.getAttribute('data-student-id'));
+                    const isPresent = this.getAttribute('data-present') === 'true';
+                    markAttendance(studentId, isPresent);
+                });
+            });
+            
+            // Adicionar event listeners para os campos de observação
+            document.querySelectorAll('.observation-input').forEach(input => {
+                input.addEventListener('change', function() {
+                    const studentId = parseInt(this.getAttribute('data-student-id'));
+                    const observation = this.value.substring(0, 3); // Limitar a 3 caracteres
+                    updateObservation(studentId, observation);
+                });
+            });
+            
+            // Adicionar event listeners para os botões de histórico
+            document.querySelectorAll('.history-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const studentId = parseInt(this.getAttribute('data-student-id'));
+                    const studentName = this.getAttribute('data-student-name');
+                    showStudentHistory(studentId, studentName);
+                });
+            });
+            
+            updateSummary();
+        }
+        
+        // Obter registros de faltas para uma data específica e turma
+        async function getAbsencesForDate(date, classLetter) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], "readonly");
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.getAll();
+                
+                request.onsuccess = event => {
+                    const allAbsences = event.target.result;
+                    const filteredAbsences = allAbsences.filter(absence => 
+                        absence.date === date && absence.class === classLetter
+                    );
+                    resolve(filteredAbsences);
+                };
+                
+                request.onerror = event => {
+                    reject(event.target.error);
+                };
+            });
+        }
+        
+        // Obter contagem de faltas por aluno em uma turma específica
+        async function getAbsenceCountByStudent(classLetter) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], "readonly");
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.getAll();
+                
+                request.onsuccess = event => {
+                    const absences = event.target.result;
+                    const countByStudent = {};
+                    
+                    absences.forEach(absence => {
+                        if (absence.class === classLetter) {
+                            if (!countByStudent[absence.studentId]) {
+                                countByStudent[absence.studentId] = 0;
+                            }
+                            countByStudent[absence.studentId]++;
+                        }
+                    });
+                    
+                    resolve(countByStudent);
+                };
+                
+                request.onerror = event => {
+                    reject(event.target.error);
+                };
+            });
+        }
+        
+        // Marcar presença ou falta
+        async function markAttendance(studentId, isPresent) {
+            const date = document.getElementById("attendanceDate").value;
+            
+            try {
+                if (!isPresent) {
+                    // Registrar falta
+                    await addAbsence(studentId, date, currentClass);
+                } else {
+                    // Remover registro de falta (se existir)
+                    await removeAbsence(studentId, date, currentClass);
+                }
+                
+                // Recarregar lista de alunos
+                await loadStudents();
+                
+            } catch (error) {
+                updateStatus("Erro ao marcar presença: " + error);
+            }
+        }
+        
+        // Atualizar observação
+        async function updateObservation(studentId, observation) {
+            const date = document.getElementById("attendanceDate").value;
+            
+            try {
+                const transaction = db.transaction([STORE_NAME], "readwrite");
+                const store = transaction.objectStore(STORE_NAME);
+                
+                // Encontrar o registro para este aluno, data e turma
+                const request = store.getAll();
+                
+                request.onsuccess = event => {
+                    const absences = event.target.result;
+                    const existingAbsence = absences.find(absence => 
+                        absence.studentId === studentId && 
+                        absence.date === date && 
+                        absence.class === currentClass
+                    );
+                    
+                    if (existingAbsence) {
+                        // Atualizar observação
+                        existingAbsence.observation = observation;
+                        
+                        const updateRequest = store.put(existingAbsence);
+                        
+                        updateRequest.onsuccess = () => {
+                            updateStatus(`Observação atualizada para o aluno #${studentId} em ${formatDate(date)}`);
+                        };
+                        
+                        updateRequest.onerror = event => {
+                            updateStatus("Erro ao atualizar observação: " + event.target.error);
+                        };
+                    } else if (observation.trim() !== '') {
+                        // Se não existe registro de falta mas tem observação, criar um registro apenas com a observação
+                        const absence = {
+                            studentId,
+                            date,
+                            class: currentClass,
+                            observation: observation,
+                            timestamp: new Date().toISOString()
+                        };
+                        
+                        const addRequest = store.add(absence);
+                        
+                        addRequest.onsuccess = () => {
+                            updateStatus(`Observação adicionada para o aluno #${studentId} em ${formatDate(date)}`);
+                        };
+                        
+                        addRequest.onerror = event => {
+                            updateStatus("Erro ao adicionar observação: " + event.target.error);
+                        };
+                    }
+                };
+                
+                request.onerror = event => {
+                    updateStatus("Erro ao buscar registro: " + event.target.error);
+                };
+                
+            } catch (error) {
+                updateStatus("Erro ao atualizar observação: " + error);
+            }
+        }
+        
+        // Adicionar registro de falta
+        function addAbsence(studentId, date, classLetter) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], "readwrite");
+                const store = transaction.objectStore(STORE_NAME);
+                
+                // Verificar se já existe um registro para este aluno, data e turma
+                const request = store.getAll();
+                
+                request.onsuccess = event => {
+                    const absences = event.target.result;
+                    const existingAbsence = absences.find(absence => 
+                        absence.studentId === studentId && 
+                        absence.date === date && 
+                        absence.class === classLetter
+                    );
+                    
+                    if (existingAbsence) {
+                        // Já existe um registro, não precisa adicionar novamente
+                        resolve();
+                        return;
+                    }
+                    
+                    // Não existe registro, adicionar novo
+                    const absence = {
+                        studentId,
+                        date,
+                        class: classLetter,
+                        observation: '',
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    const addRequest = store.add(absence);
+                    
+                    addRequest.onsuccess = () => {
+                        updateStatus(`Falta registrada para o aluno #${studentId} em ${formatDate(date)} na Turma ${classLetter}`);
+                        resolve();
+                    };
+                    
+                    addRequest.onerror = event => {
+                        reject(event.target.error);
+                    };
+                };
+                
+                request.onerror = event => {
+                    reject(event.target.error);
+                };
+            });
+        }
+        
+        // Remover registro de falta
+        function removeAbsence(studentId, date, classLetter) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], "readwrite");
+                const store = transaction.objectStore(STORE_NAME);
+                
+                // Encontrar o registro para este aluno, data e turma
+                const request = store.getAll();
+                
+                request.onsuccess = event => {
+                    const absences = event.target.result;
+                    const existingAbsence = absences.find(absence => 
+                        absence.studentId === studentId && 
+                        absence.date === date && 
+                        absence.class === classLetter
+                    );
+                    
+                    if (!existingAbsence) {
+                        // Não existe registro, nada a fazer
+                        resolve();
+                        return;
+                    }
+                    
+                    // Verificar se há observação
+                    const hasObservation = existingAbsence.observation && existingAbsence.observation.trim() !== '';
+                    
+                    if (hasObservation) {
+                        // Se tem observação, manter o registro mas remover a indicação de falta
+                        existingAbsence.observation = existingAbsence.observation || '';
+                        
+                        const updateRequest = store.put(existingAbsence);
+                        
+                        updateRequest.onsuccess = () => {
+                            updateStatus(`Presença registrada para o aluno #${studentId} em ${formatDate(date)} na Turma ${classLetter} (observação mantida)`);
+                            resolve();
+                        };
+                        
+                        updateRequest.onerror = event => {
+                            reject(event.target.error);
+                        };
+                    } else {
+                        // Se não tem observação, remover o registro completamente
+                        const deleteRequest = store.delete(existingAbsence.id);
+                        
+                        deleteRequest.onsuccess = () => {
+                            updateStatus(`Presença registrada para o aluno #${studentId} em ${formatDate(date)} na Turma ${classLetter}`);
+                            resolve();
+                        };
+                        
+                        deleteRequest.onerror = event => {
+                            reject(event.target.error);
+                        };
+                    }
+                };
+                
+                request.onerror = event => {
+                    reject(event.target.error);
+                };
+            });
+        }
+        
+        // Mostrar histórico de faltas de um aluno
+        async function showStudentHistory(studentId, studentName) {
+            try {
+                const absences = await getStudentAbsences(studentId, currentClass);
+                
+                const historyList = document.getElementById("historyList");
+                historyList.innerHTML = "";
+                
+                document.getElementById("historyTitle").textContent = `Histórico de Faltas - ${studentName} (Turma ${currentClass})`;
+                
+                if (absences.length > 0) {
+                    // Ordenar por data (mais recente primeiro)
+                    absences.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    
+                    absences.forEach(absence => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">${formatDate(absence.date)}</td>
+                            <td class="px-4 py-2 whitespace-nowrap text-sm text-center">
+                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                    Falta
+                                </span>
+                            </td>
+                            <td class="px-4 py-2 whitespace-nowrap text-sm text-center">
+                                ${absence.observation || '---'}
+                            </td>
+                        `;
+                        historyList.appendChild(row);
+                    });
+                } else {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td colspan="3" class="px-4 py-4 text-center text-sm text-gray-500">
+                            Nenhuma falta registrada
+                        </td>
+                    `;
+                    historyList.appendChild(row);
+                }
+                
+                document.getElementById("historyModal").classList.remove("hidden");
+                
+            } catch (error) {
+                updateStatus("Erro ao carregar histórico: " + error);
+            }
+        }
+        
+        // Obter faltas de um aluno específico em uma turma
+        function getStudentAbsences(studentId, classLetter) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], "readonly");
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.getAll();
+                
+                request.onsuccess = event => {
+                    const absences = event.target.result;
+                    const filteredAbsences = absences.filter(absence => 
+                        absence.studentId === studentId && absence.class === classLetter
+                    );
+                    resolve(filteredAbsences);
+                };
+                
+                request.onerror = event => {
+                    reject(event.target.error);
+                };
+            });
+        }
+        
+        // Atualizar resumo
+        async function updateSummary() {
+            try {
+                // Obter todos os registros de faltas para a turma atual
+                const allAbsences = await getAllData();
+                const classAbsences = allAbsences.filter(absence => absence.class === currentClass);
+                
+                // Contar faltas para a data selecionada na turma atual
+                const currentDate = document.getElementById("attendanceDate").value;
+                const absencesToday = classAbsences.filter(absence => absence.date === currentDate).length;
+                
+                document.getElementById("totalStudents").textContent = classStudents[currentClass].length;
+                document.getElementById("totalAbsences").textContent = classAbsences.length;
+                document.getElementById("absentToday").textContent = absencesToday;
+                
+            } catch (error) {
+                updateStatus("Erro ao atualizar resumo: " + error);
+            }
+        }
+        
+        // Obter todos os dados
+        function getAllData() {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], "readonly");
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.getAll();
+                
+                request.onsuccess = event => {
+                    resolve(event.target.result);
+                };
+                
+                request.onerror = event => {
+                    reject(event.target.error);
+                };
+            });
+        }
+        
+        // Limpar todos os dados da turma atual
+        function clearDatabase() {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], "readwrite");
+                const store = transaction.objectStore(STORE_NAME);
+                
+                // Obter todos os registros
+                const request = store.getAll();
+                
+                request.onsuccess = event => {
+                    const allRecords = event.target.result;
+                    const classRecords = allRecords.filter(record => record.class === currentClass);
+                    
+                    // Remover cada registro da turma atual
+                    let deletedCount = 0;
+                    let errorCount = 0;
+                    
+                    if (classRecords.length === 0) {
+                        updateStatus(`Nenhum dado encontrado para a Turma ${currentClass}.`);
+                        resolve();
+                        return;
+                    }
+                    
+                    classRecords.forEach(record => {
+                        const deleteRequest = store.delete(record.id);
+                        
+                        deleteRequest.onsuccess = () => {
+                            deletedCount++;
+                            if (deletedCount + errorCount === classRecords.length) {
+                                updateStatus(`${deletedCount} registros removidos da Turma ${currentClass}.`);
+                                resolve();
+                            }
+                        };
+                        
+                        deleteRequest.onerror = event => {
+                            errorCount++;
+                            updateStatus(`Erro ao remover registro: ${event.target.error}`);
+                            if (deletedCount + errorCount === classRecords.length) {
+                                if (errorCount > 0) {
+                                    reject(`${errorCount} erros ocorreram durante a limpeza.`);
+                                } else {
+                                    resolve();
+                                }
+                            }
+                        };
+                    });
+                };
+                
+                request.onerror = event => {
+                    updateStatus("Erro ao obter registros: " + event.target.error);
+                    reject(event.target.error);
+                };
+            });
+        }
+        
+        // Adicionar nome do aluno aos registros JSON
+        async function addStudentNamesToRecords(records) {
+            // Criar uma cópia profunda dos registros para não modificar os originais
+            const recordsWithNames = JSON.parse(JSON.stringify(records));
+            
+            // Adicionar nome do aluno a cada registro
+            recordsWithNames.forEach(record => {
+                const student = classStudents[record.class].find(s => s.id === record.studentId);
+                if (student) {
+                    record.studentName = student.name;
+                }
+            });
+            
+            return recordsWithNames;
+        }
+        
+        // Exibir dados em formato JSON
+        async function viewJsonData() {
+            try {
+                const allData = await getAllData();
+                const classData = allData.filter(record => record.class === currentClass);
+                
+                // Adicionar nomes dos alunos aos registros
+                const dataWithNames = await addStudentNamesToRecords(classData);
+                
+                const jsonDisplay = document.getElementById("jsonDisplay");
+                jsonDisplay.textContent = JSON.stringify(dataWithNames, null, 2);
+                
+                document.getElementById("jsonModal").classList.remove("hidden");
+                updateStatus(`Dados JSON da Turma ${currentClass} carregados para visualização.`);
+            } catch (error) {
+                updateStatus("Erro ao carregar dados JSON: " + error);
+            }
+        }
+        
+        // Exportar dados como JSON
+        async function exportData() {
+            try {
+                const allData = await getAllData();
+                const classData = allData.filter(record => record.class === currentClass);
+                
+                // Adicionar nomes dos alunos aos registros
+                const dataWithNames = await addStudentNamesToRecords(classData);
+                
+                const dataStr = JSON.stringify(dataWithNames, null, 2);
+                const blob = new Blob([dataStr], { type: "application/json" });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `frequencia_turma_${currentClass}.json`;
+                a.click();
+                
+                URL.revokeObjectURL(url);
+                updateStatus(`Dados da Turma ${currentClass} exportados com sucesso!`);
+            } catch (error) {
+                updateStatus("Erro ao exportar dados: " + error);
+            }
+        }
+        
+        // Copiar JSON para a área de transferência
+        function copyJsonToClipboard() {
+            const jsonDisplay = document.getElementById("jsonDisplay");
+            
+            // Criar um elemento de texto temporário
+            const textArea = document.createElement("textarea");
+            textArea.value = jsonDisplay.textContent;
+            document.body.appendChild(textArea);
+            textArea.select();
+            
+            try {
+                document.execCommand("copy");
+                updateStatus("JSON copiado para a área de transferência!");
+            } catch (err) {
+                updateStatus("Erro ao copiar: " + err);
+            }
+            
+            document.body.removeChild(textArea);
+        }
+        
+        // Mostrar modal de importação
+        function showImportModal() {
+            document.getElementById("importModal").classList.remove("hidden");
+            document.getElementById("jsonTextInput").value = "";
+            document.getElementById("jsonFileInput").value = "";
+        }
+        
+        // Validar JSON
+        function validateJson() {
+            const jsonText = document.getElementById("jsonTextInput").value.trim();
+            
+            if (!jsonText) {
+                updateStatus("Nenhum JSON para validar. Por favor, insira ou carregue um arquivo JSON.");
+                return false;
+            }
+            
+            try {
+                const data = JSON.parse(jsonText);
+                
+                if (!Array.isArray(data)) {
+                    updateStatus("Erro: O JSON deve ser um array de registros.");
+                    return false;
+                }
+                
+                // Verificar se cada registro tem os campos necessários
+                for (let i = 0; i < data.length; i++) {
+                    const record = data[i];
+                    if (!record.studentId || !record.date || !record.class) {
+                        updateStatus(`Erro: Registro na posição ${i} não possui todos os campos obrigatórios (studentId, date, class).`);
+                        return false;
+                    }
+                    
+                    // Verificar se a turma no JSON corresponde à turma atual
+                    if (record.class !== currentClass) {
+                        updateStatus(`Aviso: O registro na posição ${i} pertence à Turma ${record.class}, mas a turma atual é ${currentClass}.`);
+                    }
+                }
+                
+                updateStatus(`JSON válido! ${data.length} registros encontrados.`);
+                return true;
+            } catch (error) {
+                updateStatus("Erro ao analisar JSON: " + error.message);
+                return false;
+            }
+        }
+        
+        // Importar JSON
+        async function importJson() {
+            const jsonText = document.getElementById("jsonTextInput").value.trim();
+            
+            if (!jsonText) {
+                updateStatus("Nenhum JSON para importar. Por favor, insira ou carregue um arquivo JSON.");
+                return;
+            }
+            
+            try {
+                const data = JSON.parse(jsonText);
+                
+                if (!Array.isArray(data)) {
+                    updateStatus("Erro: O JSON deve ser um array de registros.");
+                    return;
+                }
+                
+                // Filtrar apenas registros da turma atual
+                const classData = data.filter(record => record.class === currentClass);
+                
+                if (classData.length === 0) {
+                    updateStatus(`Nenhum registro encontrado para a Turma ${currentClass} no JSON fornecido.`);
+                    return;
+                }
+                
+                // Limpar dados existentes da turma atual
+                await clearDatabase();
+                
+                // Importar novos dados
+                const transaction = db.transaction([STORE_NAME], "readwrite");
+                const store = transaction.objectStore(STORE_NAME);
+                
+                let importedCount = 0;
+                let errorCount = 0;
+                
+                for (const record of classData) {
+                    // Remover o campo 'id' se existir para permitir autoincremento
+                    if (record.id !== undefined) {
+                        delete record.id;
+                    }
+                    
+                    // Remover o campo 'studentName' se existir, pois não é armazenado no banco
+                    if (record.studentName !== undefined) {
+                        delete record.studentName;
+                    }
+                    
+                    // Adicionar timestamp se não existir
+                    if (!record.timestamp) {
+                        record.timestamp = new Date().toISOString();
+                    }
+                    
+                    const request = store.add(record);
+                    
+                    request.onsuccess = () => {
+                        importedCount++;
+                        if (importedCount + errorCount === classData.length) {
+                            updateStatus(`Importação concluída! ${importedCount} registros importados para a Turma ${currentClass}.`);
+                            loadStudents(); // Recarregar lista de alunos
+                            document.getElementById("importModal").classList.add("hidden");
+                        }
+                    };
+                    
+                    request.onerror = event => {
+                        errorCount++;
+                        updateStatus(`Erro ao importar registro: ${event.target.error}`);
+                        if (importedCount + errorCount === classData.length) {
+                            updateStatus(`Importação concluída com ${errorCount} erros. ${importedCount} registros importados.`);
+                            loadStudents(); // Recarregar lista de alunos
+                            document.getElementById("importModal").classList.add("hidden");
+                        }
+                    };
+                }
+                
+            } catch (error) {
+                updateStatus("Erro ao importar JSON: " + error.message);
+            }
+        }
+        
+        // Ler arquivo JSON
+        function readJsonFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                
+                reader.onload = event => {
+                    resolve(event.target.result);
+                };
+                
+                reader.onerror = error => {
+                    reject(error);
+                };
+                
+                reader.readAsText(file);
+            });
+        }
+        
+        // Atualizar status
+        function updateStatus(message) {
+            const dbStatus = document.getElementById("dbStatus");
+            const timestamp = new Date().toLocaleTimeString();
+            dbStatus.textContent = `[${timestamp}] ${message}\n${dbStatus.textContent}`;
+        }
+        
+        // Inicializar aplicação
+        document.addEventListener("DOMContentLoaded", async () => {
+            try {
+                // Definir data atual
+                setCurrentDate();
+                
+                // Inicializar banco de dados
+                await initDatabase();
+                
+                // Carregar lista de alunos da turma inicial (A)
+                await loadStudents();
+                
+                // Event listener para mudança de data
+                document.getElementById("attendanceDate").addEventListener("change", async function() {
+                    await loadStudents();
+                });
+                
+                // Event listeners para as abas de turmas
+                document.querySelectorAll('.tab-button').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const classLetter = this.id.split('-').pop();
+                        switchClass(classLetter);
+                    });
+                });
+                
+                // Event listener para o botão de visualizar JSON
+                document.getElementById("viewJsonBtn").addEventListener("click", viewJsonData);
+                
+                // Event listener para o botão de exportar
+                document.getElementById("exportBtn").addEventListener("click", exportData);
+                
+                // Event listener para o botão de importar
+                document.getElementById("importBtn").addEventListener("click", showImportModal);
+                
+                // Event listener para o botão de limpar
+                document.getElementById("clearBtn").addEventListener("click", async function() {
+                    if (confirm(`Tem certeza que deseja limpar todos os dados da Turma ${currentClass}?`)) {
+                        await clearDatabase();
+                        await loadStudents();
+                    }
+                });
+                
+                // Event listeners para o modal JSON
+                document.getElementById("closeJsonModal").addEventListener("click", function() {
+                    document.getElementById("jsonModal").classList.add("hidden");
+                });
+                
+                document.getElementById("closeModalBtn").addEventListener("click", function() {
+                    document.getElementById("jsonModal").classList.add("hidden");
+                });
+                
+                document.getElementById("copyJsonBtn").addEventListener("click", copyJsonToClipboard);
+                
+                // Event listeners para o modal de histórico
+                document.getElementById("closeHistoryModal").addEventListener("click", function() {
+                    document.getElementById("historyModal").classList.add("hidden");
+                });
+                
+                document.getElementById("closeHistoryBtn").addEventListener("click", function() {
+                    document.getElementById("historyModal").classList.add("hidden");
+                });
+                
+                // Event listeners para o modal de importação
+                document.getElementById("closeImportModal").addEventListener("click", function() {
+                    document.getElementById("importModal").classList.add("hidden");
+                });
+                
+                document.getElementById("cancelImportBtn").addEventListener("click", function() {
+                    document.getElementById("importModal").classList.add("hidden");
+                });
+                
+                document.getElementById("validateJsonBtn").addEventListener("click", validateJson);
+                
+                document.getElementById("confirmImportBtn").addEventListener("click", importJson);
+                
+                // Event listener para o input de arquivo JSON
+                document.getElementById("jsonFileInput").addEventListener("change", async function(event) {
+                    if (event.target.files.length > 0) {
+                        try {
+                            const file = event.target.files[0];
+                            const content = await readJsonFile(file);
+                            document.getElementById("jsonTextInput").value = content;
+                            updateStatus(`Arquivo "${file.name}" carregado com sucesso.`);
+                        } catch (error) {
+                            updateStatus("Erro ao ler arquivo: " + error);
+                        }
+                    }
+                });
+                
+                // Fechar os modais ao clicar fora deles
+                document.getElementById("jsonModal").addEventListener("click", function(e) {
+                    if (e.target === this) {
+                        this.classList.add("hidden");
+                    }
+                });
+                
+                document.getElementById("historyModal").addEventListener("click", function(e) {
+                    if (e.target === this) {
+                        this.classList.add("hidden");
+                    }
+                });
+                
+                document.getElementById("importModal").addEventListener("click", function(e) {
+                    if (e.target === this) {
+                        this.classList.add("hidden");
+                    }
+                });
+                
+            } catch (error) {
+                updateStatus("Erro ao inicializar aplicação: " + error);
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9454c98944636f89',t:'MTc0ODE3MzUzMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
